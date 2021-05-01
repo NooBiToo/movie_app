@@ -1,69 +1,57 @@
-import { render } from "@testing-library/react";
-import PropTypes from "prop-types";
+import React from "react";
+import axios from "axios";
+import Movie from "./Movie.js";
+import "./App.css";
 
-const foodILike = [
-  {
-    id: 1,
-    name: "Борщ",
-    image:
-      "https://img.povar.ru/main/ab/23/b4/9c/samii_vkusnii_borsh-404089.jpg",
-    rating: 4.8,
-  },
-  {
-    id: 4,
-    name: "Паста",
-    image:
-      "https://s1.eda.ru/StaticContent/Photos/150525210126/150601174518/p_O.jpg",
-    rating: 4.4,
-  },
-  {
-    id: 3,
-    name: "Пицца",
-    image:
-      "https://s1.eda.ru/StaticContent/Photos/120131085053/171027192707/p_O.jpg",
-    // rating: 4.6,
-  },
-  {
-    id: 5,
-    name: "Стейк",
-    image:
-      "https://www.koolinar.ru/all_image/recipes/131/131565/recipe_f17a18ba-8b57-4bc4-89c8-417c423a250f.jpg",
-    rating: "5",
-  },
-];
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: [],
+  };
+  
+  render() {
+    const { isLoading, movies } = this.state;
+    return (
+      <section className="container">
+        {isLoading ? (
+          <div className="loader">
+            <span className="loader__text">Loading...</span>
+          </div>
+        ) : (
+          <div className="movies">
+            {movies.map((movie) => (
+              <Movie
+                key={movie.id}
+                id={movie.id}
+                year={movie.year}
+                title={movie.title}
+                summary={movie.summary}
+                poster={movie.medium_cover_image}
+                genres={movie.genres}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    );
+  }
 
-function Food({ name, image, rating }) {
-  return (
-    <div className="food">
-      <h3>Я люблю кушать {name}</h3>
-      <h4>{rating} / 5</h4>
-      <img src={image} alt={name} width="auto" height="150px" />
-    </div>
-  );
-}
-Food.propTypes = {
-  name: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired,
-  rating: PropTypes.number,
-};
-function renderFood(dish) {
-  return (
-    <Food
-      key={dish.id}
-      name={dish.name}
-      image={dish.image}
-      rating={dish.rating}
-    />
-  );
-}
+  getMovies = async () => {
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get(
+      "https://yts.mx/api/v2/list_movies.json?sort_by=rating"
+    );
+    this.setState({ movies, isLoading: false });
+  };
 
-function App() {
-  return (
-    <div className="App">
-      {console.log(foodILike.map(renderFood))}
-      {foodILike.map(renderFood)}
-    </div>
-  );
+  componentDidMount() {
+    this.getMovies();
+  }
+  componentDidUpdate() {}
+  componentWillUnmount() {}
 }
 
 export default App;

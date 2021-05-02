@@ -1,2 +1,2 @@
 # Учебный проект с React JS
-### (demo)[https://noobitoo.github.io/movie_app]
+### [demo](https://noobitoo.github.io/movie_app)
